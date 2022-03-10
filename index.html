@@ -8,7 +8,60 @@
 		<link rel="stylesheet" href="./assets/CSS/style.css" />
 		<title>Code Quiz</title>
 	</head>
-	<body></body>
+	<body>
+		<header>
+			<nav>
+				<div class="nav-view">View Highscores</div>
+				<div class="nav-timer">Time: <span id="nav-timer-increment" data-value="60">60</span></div>
+			</nav>
+		</header>
+		<main>
+			<!-- Splash section with title, description and start button-->
+			<section id="splash">
+				<div class="splash-heading">Coding Quiz Challenge</div>
+				<div class="splash-description"></div>
+				<div class="splash start-button"></div>
+			</section>
+			<!-- Game section with Question, MC, Feedback -->
+			<section id="game">
+				<div class="game-question">A very useful tool in debugging Javascript is</div>
+				<div class="game-multichoice">
+					<ul>
+						<li>parse</li>
+						<li>debugger</li>
+						<li>command</li>
+						<li>filter</li>
+					</ul>
+				</div>
+				<div class="game-feedback">Wrong!</div>
+			</section>
+			<!-- Record section with Title, Instruction, Form -->
+			<section id="record">
+				<div class="record-title">All done!</div>
+				<div class="record-instruction">Your final score is <span id="record-result" data-value="32">32</span></div>
+				<div class="record-form">
+					Enter initials:
+					<form>
+						<input type="text" name="initials" id="asdf" /><span class="button-wrapper"><button id="record-button">Submit</button></span>
+					</form>
+				</div>
+			</section>
+			<!-- Highscores section with Title, Instruction -->
+			<section id="highscores">
+				<div class="highscores-title"></div>
+				<div class="highscores-instruction"></div>
+				<div class="highscores-buttons">
+					<!-- two buttons to Go Back or Clear Highscores -->
+					<div class="button-wrapper">
+						<button id="go-back">Go back</button>
+					</div>
+					<div class="button-wrapper">
+						<button id="clear-highscores">Clear high scores</button>
+					</div>
+				</div>
+			</section>
+		</main>
+	</body>
 
 	<script src="./assets/JS/script.js"></script>
 </html>
