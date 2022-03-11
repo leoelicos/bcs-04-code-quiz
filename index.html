@@ -4,44 +4,47 @@
 		<meta charset="UTF-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<link rel="shortcut icon" href="" type="image/x-icon" />
+		<link rel="shortcut icon" href="./assets/images/favicon.png" type="image/x-icon" />
 		<link rel="stylesheet" href="./assets/CSS/normalize.css" />
 		<link rel="stylesheet" href="./assets/CSS/style.css" />
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-		<title>Code Quiz</title>
+		<title>SYTYCJ</title>
 	</head>
 	<body>
 		<header>
-	      <p class="nav-view"><i class="far fa-chart-bar"></i></p>
-			<p class="nav-timer">Time: <span id="nav-timer-increment" data-value="60">60</span></p>
+			<p class="nav-view">
+				<i class="far fa-chart-bar"></i>
+			</p>
+			<p class="nav-score">Score: <span id="score">#</span></p>
+			<p class="nav-timer"><i class="fa fa-clock"></i><span id="nav-timer-increment" data-value="60">0:60</span></p>
 		</header>
 		<main>
 			<!-- Splash section with title, description and start button-->
 			<section id="splash">
-				<h1 class="splash-heading">Coding Quiz Challenge</h1>
-				<p class="splash-description">Try to answer the following code-related questions within the time limit. Keep in mind that incorrect answers will penalize your score/time by ten seconds!</p>
-				<button class="splash-start-button">Start Quiz</button>
+				<img class="splash-image" src="./assets/images/favicon.png" alt="" />
+				<h1 class="splash-heading">So You Think You Can Javascript?</h1>
+				<p class="splash-description">6 questions.</p>
+				<p class="splash-description">60 seconds.</p>
+				<button class="splash-start-button"><span>Ready?</span></button>
 			</section>
- 
-			<section class="transition">
-            <i class="far fa-arrow-alt-circle-down"></i>
-         </section>
 			<!-- Game section with Question, MC, Feedback -->
 			<section id="game">
-				<div class="game-question"><p>A very useful tool in debugging Javascript is</p></div>
+				<p class="game-question">For each question, read and choose the answer which fits best. You have until the clock <i class="fa fa-clock"></i> reaches 0:00. Question 1 is worth 1 point, Question 2 is worth 2 points, and so on. Good luck!</p>
 				<div class="game-multichoice">
-					<ul>
-						<li>parse</li>
-						<li>debugger</li>
-						<li>command</li>
-						<li>filter</li>
+					<p class="context">1 Debugging</p>
+					<p class="question" id="question">A very useful tool in debugging Javascript is</p>
+					<ul class="options">
+						<li class="btn-wrapper"><button class="btn" id="option1">parse</button></li>
+						<li class="btn-wrapper"><button class="btn" id="option2">debugger</button></li>
+						<li class="btn-wrapper"><button class="btn" id="option3">command</button></li>
+						<li class="btn-wrapper"><button class="btn" id="option4">filter</button></li>
 					</ul>
 				</div>
-				<div class="game-feedback">Wrong!</div>
+				<p class="feedback">Wrong!</p>
 			</section>
-			<section class="transition"><i class="far fa-arrow-alt-circle-down"></i></section>
+
 			<!-- Record section with Title, Instruction, Form -->
-			<section id="record">
+			<!-- <section id="record">
 				<h1 class="record-title">All done!</h1>
 				<p class="record-instruction">Your final score is <span id="record-result" data-value="32">32</span></p>
 				<p class="record-form">
@@ -52,14 +55,13 @@
 						></span>
 					</form>
 				</p>
-			</section>
-			<section class="transition"><i class="far fa-arrow-alt-circle-down"></i></section>
+			</section> -->
+
 			<!-- Highscores section with Title, Instruction -->
-			<section id="highscores">
+			<!-- <section id="highscores">
 				<div class="highscores-title"></div>
 				<div class="highscores-instruction"></div>
 				<div class="highscores-buttons">
-					<!-- two buttons to Go Back or Clear Highscores -->
 					<div class="button-wrapper">
 						<button id="go-back">Go back</button>
 					</div>
@@ -67,7 +69,7 @@
 						<button id="clear-highscores">Clear high scores</button>
 					</div>
 				</div>
-			</section>
+			</section> -->
 		</main>
 	</body>
 
