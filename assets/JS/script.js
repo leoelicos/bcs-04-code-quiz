@@ -153,6 +153,6 @@ function recordSection() {
 		SYTYCJ === null ? (SYTYCJ = []) : (SYTYCJ = JSON.parse(SYTYCJ));
 		SYTYCJ.push({ initials: initials, score: secondsLeft });
 		localStorage.setItem('SYTYCJ', JSON.stringify(SYTYCJ));
-		window.location.replace('./hs.html');
+		window.location.replace('../JS/hs.html');
 	});
 }
