@@ -34,7 +34,7 @@ body > * {
 
 body {
 	height: 100%;
-	background-color: #dbe5f5;
+	background-color: #808080;
 	font-family: 'Roboto', sans-serif;
 	display: flex;
 	flex-direction: column;
@@ -122,15 +122,14 @@ header {
 
 /* main */
 main {
-	border-left: 1px dashed black;
-	border-right: 1px dashed black;
-	padding: 0.6rem 0;
+	background-color: #dbe5f5;
+	padding: 0.6rem;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	height: 100%;
 }
 
-/* splash "Coding Quiz Challenge" */
 #splash {
 	display: flex;
 	flex-flow: column wrap;
@@ -158,12 +157,8 @@ main {
 	border-radius: 4px;
 	text-align: center;
 	font-weight: bold;
-
-	/* padding: 1rem 2rem; */
-	/* background-color: rgb(2, 2, 2); */
-	/* color: white; */
-	/* border: 1px solid #ffc000; */
 }
+
 .splash-start-button {
 	background-color: #ffc000;
 	color: black;
@@ -175,6 +170,7 @@ main {
 	text-shadow: 1px 1px rgb(255 255 255 / 30%);
 	box-shadow: 0 3px rgb(255 190 190);
 }
+
 .splash-start-button:hover {
 	background-color: rgb(252, 136, 136);
 	color: rgba(255, 255, 255, 1);
@@ -186,11 +182,13 @@ main {
 	transform: translateY(0px);
 	transition: transform 0.1s linear;
 }
+
 .splash-start-button:active {
 	background-color: #f85276;
 	transform: translateY(4px);
 	transition: transform 0.1s linear;
 }
+
 .splash-start-button span {
 	width: 150px;
 	font-size: 1rem;
@@ -244,9 +242,7 @@ main {
 .btn-wrapper {
 	background-color: white;
 	color: black;
-	border-radius: 1rem;
-
-	border: 1px solid black;
+	border-radius: 2rem;
 
 	margin-bottom: 0.6rem;
 	width: 100%;
@@ -287,4 +283,22 @@ main {
 	padding: 0.6rem;
 	margin-top: 0.6rem;
 	background-image: -webkit-linear-gradient(top, #fff, #dde3ee);
+}
+
+/* make the highest scorer glow in gold */
+#hs li:first-child {
+	background-color: #ffc000;
+}
+/* make the 2nd highest scorer glow in silver */
+#hs li:nth-child(2) {
+	background-color: #72706b;
+}
+/* make the 3rd highest scorer glow in bronze */
+#hs li:nth-child(3) {
+	background-color: #8b6b09;
+}
+
+#hs {
+	max-height: 40vh;
+	overflow-y: scroll;
 }
