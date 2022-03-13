@@ -138,7 +138,7 @@ function recordSection() {
 
 	var submitBtn = document.createElement('button');
 	submitBtn.setAttribute('type', 'submit');
-	submitBtn.setAttribute('id', 'Submit');
+	submitBtn.setAttribute('id', 'submit');
 	submitBtn.textContent = 'Submit';
 
 	questionSection.appendChild(submitBtn);
