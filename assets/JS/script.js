@@ -209,7 +209,7 @@ function recordSection() {
 	// label for 'Seconds remaining'
 	newLabel = document.createElement('p');
 	newLabel.setAttribute('id', 'victoryScoreLabel');
-	newLabel.textContent = 'Seconds remaining: ' + secondsLeft;
+	newLabel.textContent = 'Seconds remaining: ' + Math.max(secondsLeft, 0); // can't be lower than zero
 	newMain.appendChild(newLabel);
 
 	// separator
@@ -247,7 +247,7 @@ function recordSection() {
 		}
 		var SYTYCJ = localStorage.getItem('SYTYCJ');
 		SYTYCJ === null ? (SYTYCJ = []) : (SYTYCJ = JSON.parse(SYTYCJ));
-		SYTYCJ.push({ initials: initials, score: secondsLeft });
+		SYTYCJ.push({ initials: initials, score: Math.max(secondsLeft, 0) });
 		localStorage.setItem('SYTYCJ', JSON.stringify(SYTYCJ));
 		// render highScores
 		renderHighScores();
@@ -299,23 +299,59 @@ function renderHighScoresMain() {
 	}
 	hs.style.listStyleType = 'none';
 	if (SYTYCJ !== null) {
+		// table headings
+		newListItem = document.createElement('li');
+		newListItem.classList.add('btn-wrapper');
+		newDiv = document.createElement('button');
+		newDiv.setAttribute('id', 'hs-wrapper');
+		newDiv.classList.add('btn');
+		// render span for rank
+		newSpan = document.createElement('span');
+		newSpan.setAttribute('id', 'hs-rank');
+		newSpan.textContent = `Rank`;
+		newDiv.appendChild(newSpan);
+		// render span for high scorer's initials
+		newSpan = document.createElement('span');
+		newSpan.setAttribute('id', 'hs-initial');
+		newSpan.textContent = `Name`;
+		newDiv.appendChild(newSpan);
+		// render span for high scorer's score
+		newSpan = document.createElement('span');
+		newSpan.setAttribute('id', 'hs-score');
+		newSpan.textContent = `Score`;
+		newDiv.appendChild(newSpan);
+		newListItem.appendChild(newDiv);
+
+		newDiv.appendChild(newSpan);
+		// append to high score list
+		hs.appendChild(newListItem);
+
 		for (var i = 0; i < SYTYCJ.length; i++) {
-			var newListItem = document.createElement('li');
+			// render each high score as a list item
+			newListItem = document.createElement('li');
 			newListItem.classList.add('btn-wrapper');
-			var newDiv = document.createElement('button');
+			newDiv = document.createElement('button');
 			newDiv.setAttribute('id', 'hs-wrapper');
 			newDiv.classList.add('btn');
-			// span for high scorer's initials
+			// render span for rank
+			newSpan = document.createElement('span');
+			newSpan.setAttribute('id', 'hs-rank');
+			newSpan.textContent = `${i + 1}`;
+			newDiv.appendChild(newSpan);
+			// render span for high scorer's initials
 			newSpan = document.createElement('span');
 			newSpan.setAttribute('id', 'hs-initial');
-			newSpan.textContent = `${SYTYCJ[i].initials}:`;
+			newSpan.textContent = `${SYTYCJ[i].initials}`;
 			newDiv.appendChild(newSpan);
-			// span for high scorer's score
+			// render span for high scorer's score
 			newSpan = document.createElement('span');
 			newSpan.setAttribute('id', 'hs-score');
 			newSpan.textContent = `${SYTYCJ[i].score}`;
 			newDiv.appendChild(newSpan);
 			newListItem.appendChild(newDiv);
+
+			newDiv.appendChild(newSpan);
+			// append to high score list
 			hs.appendChild(newListItem);
 		}
 	}

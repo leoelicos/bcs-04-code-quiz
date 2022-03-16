@@ -1,8 +1,8 @@
-/**************** 
-  IMPORTED FONTS
- ******************/
+/***************************************** 
+  IMPORTED FONTS — ROBOTO AND ROBOTO MONO
+ *****************************************/
 
-@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto&family=Roboto+Mono:wght@100&display=swap');
 
 /****************** 
   UNIVERSAL SELECTOR
@@ -153,16 +153,17 @@ ul {
 	flex: 1;
 	background-color: var(--color-tertiary);
 	transform: translateY(0px);
-	transition: transform 0.1s linear;
 	padding: 1vmin 2vmin 1vmin 3vmin;
 	text-align: center;
 	cursor: pointer;
 	margin-left: 1vmin;
 }
+.nav-view:hover {
+	background-color: #ffc000;
+}
 .nav-view:active {
 	background-color: #ffc000;
 	transform: translateY(1px);
-	transition: transform 0.1s linear;
 }
 .nav-view i {
 	transform: rotate(90deg) scaleX(-1);
@@ -213,7 +214,6 @@ ul {
 	background-color: var(--color-quaternary);
 	border-radius: 1vmin;
 	transform: translateY(0px);
-	transition: transform 0.1s linear;
 	padding: 1vmin 2vmin 1vmin 3vmin;
 	text-align: center;
 }
@@ -262,12 +262,17 @@ ul {
 	border-radius: 1vmin;
 	position: relative;
 	transform: translateY(0px);
-	transition: transform 0.1s linear;
+}
+#hs .btn-wrapper:hover {
+	background-color: var(--color-tertiary);
+	border-radius: 1vmin;
 }
 .btn-wrapper:active {
 	background-color: var(--color-secondary);
 	transform: translateY(4px);
-	transition: transform 0.1s linear;
+}
+#hs .btn-wrapper:active {
+	background-color: var(--color-tertiary);
 }
 .btn {
 	background-color: inherit;
@@ -388,18 +393,45 @@ ul {
 	font-size: var(--font-size-large);
 }
 
+/* table headings */
+#hs li:nth-child(1) {
+	background-color: var(--color-primary);
+	border: none;
+	color: var(--color-darkgray);
+}
+
 /* may the highest scorer glow in gold */
-#hs li:first-child {
+#hs li:nth-child(2) {
 	background-color: #ffc000;
+	border-radius: 1vmin;
 }
 /* may the 2nd highest scorer glow in silver */
-#hs li:nth-child(2) {
+#hs li:nth-child(3) {
 	background-color: #72706b;
+	border-radius: 1vmin;
 }
 /* may the 3rd highest scorer glow in bronze */
-#hs li:nth-child(3) {
+#hs li:nth-child(4) {
 	background-color: #8b6b09;
+	border-radius: 1vmin;
 }
+
+#hs-wrapper {
+	display: flex;
+	justify-content: space-evenly;
+	font-family: 'Roboto Mono', monospace;
+}
+#hs-rank {
+	font-family: inherit;
+}
+#hs-initial {
+	font-weight: bold;
+	font-family: inherit;
+}
+#hs-score {
+	font-family: inherit;
+}
+
 /* buttons for New Game and Clear */
 #hs .btn-wrapper {
 	box-shadow: none;
