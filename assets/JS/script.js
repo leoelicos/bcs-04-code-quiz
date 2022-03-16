@@ -23,7 +23,7 @@ var index; // to increment through questionBank
 var correctQuestions = 0; //  running score
 var currentQuestion = 0; // integer that holds current question
 var currentQuestionEl; // element that renders current question
-const penalty = 5; // penalty of 5 seconds for each wrong answer
+const penalty = 10; // penalty of 5 seconds for each wrong answer
 
 var startButtonEl; // element that starts the game when clicked
 var timer; // global function that controls the timer
@@ -141,11 +141,13 @@ function checkAnswer(event) {
 	if (element.textContent == questionBank[index].answer) {
 		// correct
 		correctQuestions++;
+		feedback.classList.add('greenFeedback');
 		feedback.append(`Question ${currentQuestion} was correct!`);
 	} else {
 		// incorrect
 		secondsLeft = secondsLeft - penalty;
-		feedback.innerHTML = `<p>Question ${currentQuestion} was incorrect.<br>"${questionBank[index].title}"<br>Answer: "${questionBank[index].answer}".<br>Penalty: -${penalty} seconds</p>`;
+		feedback.classList.add('redFeedback');
+		feedback.innerHTML = `Question ${currentQuestion} was incorrect.<br>"${questionBank[index].title}"<br>Answer: "${questionBank[index].answer}".<br>Penalty: -${penalty} seconds`;
 	}
 
 	// increment current question
@@ -204,10 +206,10 @@ function recordSection() {
 	}
 	newMain.appendChild(newH1);
 
-	// label for 'Your final score is'
+	// label for 'Seconds remaining'
 	newLabel = document.createElement('p');
 	newLabel.setAttribute('id', 'victoryScoreLabel');
-	newLabel.textContent = 'Your final score is: ' + secondsLeft;
+	newLabel.textContent = 'Seconds remaining: ' + secondsLeft;
 	newMain.appendChild(newLabel);
 
 	// separator
@@ -233,9 +235,15 @@ function recordSection() {
 	newButton.setAttribute('id', 'submit');
 	newButton.textContent = 'Submit';
 	newButton.addEventListener('click', function () {
-		var initials = newInput.value;
+		var initials = newInput.value.toString().toUpperCase();
 		if (initials.length === 0) {
-			initials = 'noname';
+			newButton.textContent = 'Your initials please';
+			newButton.classList.add('redFeedback');
+			setTimeout(() => {
+				newButton.textContent = 'Submit';
+				newButton.classList.remove('redFeedback');
+			}, 500);
+			return;
 		}
 		var SYTYCJ = localStorage.getItem('SYTYCJ');
 		SYTYCJ === null ? (SYTYCJ = []) : (SYTYCJ = JSON.parse(SYTYCJ));
@@ -262,7 +270,11 @@ function renderHighScoresHeader() {
 	newIcon = document.createElement('i');
 	newIcon.setAttribute('id', 'hsIcon');
 	newIcon.classList.add('far', 'fa-chart-bar');
-	newHeader.append(newIcon);
+	newHeader.appendChild(newIcon);
+	newLabel = document.createElement('span');
+	newLabel.textContent = '\xa0Hall of Fame';
+	newLabel.setAttribute('id', 'hallOfFame');
+	newHeader.appendChild(newLabel);
 }
 
 function renderHighScoresMain() {
@@ -290,10 +302,20 @@ function renderHighScoresMain() {
 		for (var i = 0; i < SYTYCJ.length; i++) {
 			var newListItem = document.createElement('li');
 			newListItem.classList.add('btn-wrapper');
-			var newSpan = document.createElement('button');
-			newSpan.classList.add('btn');
-			newSpan.textContent = `${SYTYCJ[i].initials} ${SYTYCJ[i].score}`;
-			newListItem.appendChild(newSpan);
+			var newDiv = document.createElement('button');
+			newDiv.setAttribute('id', 'hs-wrapper');
+			newDiv.classList.add('btn');
+			// span for high scorer's initials
+			newSpan = document.createElement('span');
+			newSpan.setAttribute('id', 'hs-initial');
+			newSpan.textContent = `${SYTYCJ[i].initials}:`;
+			newDiv.appendChild(newSpan);
+			// span for high scorer's score
+			newSpan = document.createElement('span');
+			newSpan.setAttribute('id', 'hs-score');
+			newSpan.textContent = `${SYTYCJ[i].score}`;
+			newDiv.appendChild(newSpan);
+			newListItem.appendChild(newDiv);
 			hs.appendChild(newListItem);
 		}
 	}
@@ -396,19 +418,19 @@ function renderQuizMain() {
 	// p
 	newParagraph = document.createElement('p');
 	newParagraph.classList.add('splash-description');
-	newParagraph.append('6 questions.');
+	newParagraph.append(`${totalQuestions} questions.`);
 	newSection.append(newParagraph);
 
 	// p
 	newParagraph = document.createElement('p');
 	newParagraph.classList.add('splash-description');
-	newParagraph.append('60 seconds.');
+	newParagraph.append(`${secondsLeft} seconds.`);
 	newSection.append(newParagraph);
 
 	// p
 	newParagraph = document.createElement('p');
 	newParagraph.classList.add('splash-description');
-	newParagraph.append('Wrong answers will deduct 5 seconds!');
+	newParagraph.append(`Wrong answers will deduct ${penalty} seconds!`);
 	newSection.append(newParagraph);
 
 	// button
