@@ -422,6 +422,7 @@ ul {
 	font-family: 'Roboto Mono', monospace;
 }
 #hs-rank {
+	font-weight: bold;
 	font-family: inherit;
 }
 #hs-initial {
@@ -429,6 +430,7 @@ ul {
 	font-family: inherit;
 }
 #hs-score {
+	font-weight: bold;
 	font-family: inherit;
 }
 
