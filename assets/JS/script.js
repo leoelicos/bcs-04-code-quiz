@@ -4,12 +4,18 @@
 
 const questionBank = [
 	// This is a global array of objects to store each question's title, choices and answer
-	{ title: 'Which operator is used to combine values to log a single message to the console?', choices: ['+', '-', '*', '/'], answer: '+' }, // Reference: Trilogy Coding Bootcamp Week 3, Lesson 04
-	{ title: 'Which operator compares strict inequality?', choices: ['!', '!=', '!==', '!==='], answer: '!==' }, // Reference: Trilogy Coding Bootcamp Week 3, Lesson 07
-	{ title: 'The expression (!true && !false) will return …', choices: ['true', '!true', 'false', '!false'], answer: 'false' }, // Reference: Trilogy Coding Bootcamp Week 3, Lesson 08
-	{ title: 'How many times will this loop run? for (var i = 0; i < 5; i++) {…}', choices: ['2', '4', '5', '0'], answer: '5' }, // Reference: Trilogy Coding Bootcamp Week 3, Lesson 13
-	{ title: 'Which of these is NOT a valid way to write a function?', choices: ['function f() {}', 'var f = function() {}', 'function f(x,y,z) {}', 'function () {}'], answer: 'function () {}' }, // Reference: Trilogy Coding Bootcamp Week 3, Lesson 15
-	{ title: 'Which of these array methods can change [1, 2, 3] to [1, 2, 3, 4]?', choices: ['Array.sort()', 'Array.push()', 'Array.slice()', 'Array.replace()'], answer: 'Array.push()' }, // Reference: Trilogy Coding Bootcamp Week 3, Lesson 19
+	// Reference: Trilogy Coding Bootcamp Week 3, Lesson 04
+	{ title: 'Which operator is used to combine values to log a single message to the console?', choices: ['+', '-', '*', '/'], answer: '+' },
+	// Reference: Trilogy Coding Bootcamp Week 3, Lesson 07
+	{ title: 'Which operator compares strict inequality?', choices: ['!', '!=', '!==', '!==='], answer: '!==' },
+	// Reference: Trilogy Coding Bootcamp Week 3, Lesson 08
+	{ title: 'The expression (!true && !false) will return …', choices: ['true', '!true', 'false', '!false'], answer: 'false' },
+	// Reference: Trilogy Coding Bootcamp Week 3, Lesson 13
+	{ title: 'How many times will this loop run? for (var i = 0; i < 5; i++) {…}', choices: ['2', '4', '5', '0'], answer: '5' },
+	// Reference: Trilogy Coding Bootcamp Week 3, Lesson 15
+	{ title: 'Which of these is NOT a valid way to write a function?', choices: ['function f() {}', 'var f = function() {}', 'function f(x,y,z) {}', 'function () {}'], answer: 'function () {}' },
+	// Reference: Trilogy Coding Bootcamp Week 3, Lesson 19
+	{ title: 'Which of these array methods can change [1, 2, 3] to [1, 2, 3, 4]?', choices: ['Array.sort()', 'Array.push()', 'Array.slice()', 'Array.replace()'], answer: 'Array.push()' },
 ];
 const totalQuestions = questionBank.length; // total number of questions
 var index; // to increment through questionBank
@@ -27,7 +33,7 @@ var secondsEl; // element that renders the seconds left
 // elements
 const htmlBody = document.body;
 // dynamically created elements
-var newHeader, newMain, newSection, newParagraph, newIcon, newImage, newSpan, newH1, newButton, newList, newListItem, newLabel, newInput, newDiv;
+var newHeader, newMain, newSection, newParagraph, newIcon, newImage, newSpan, newH1, newButton, newList, newListItem, newLabel, newInput, feedback;
 
 init(); // load the page
 
@@ -98,10 +104,13 @@ function renderQuizQuestions(index) {
 	newMain.classList.add('quiz');
 
 	// fill the horizontal space
-	newSection = document.createElement('section');
+	// newSection = document.createElement('section');
 	// newSection.style.display = 'block';
-	newSection.append(userQuestion);
-
+	newParagraph = document.createElement('p');
+	newParagraph.setAttribute('id', 'quiz-title');
+	newParagraph.append(userQuestion);
+	// newSection.appendChild(newParagraph);
+	newMain.append(newParagraph);
 	newList = document.createElement('ul');
 
 	userChoices.forEach((newItem) => {
@@ -116,27 +125,27 @@ function renderQuizQuestions(index) {
 
 		newList.appendChild(newListItem);
 
-		newSection.appendChild(newList);
+		// newSection.appendChild(newList);
 	});
 
-	newSection.appendChild(newList);
-	newMain.appendChild(newSection);
+	// newSection.appendChild(newList);
+	// newMain.appendChild(newSection);
+	newMain.appendChild(newList);
 }
 function checkAnswer(event) {
 	var element = event.target;
 
-	newDiv = document.createElement('div');
-	newDiv.setAttribute('id', 'newDiv');
-	newDiv.setAttribute('style', 'text-align:center;');
+	feedback = document.createElement('p');
+	feedback.setAttribute('id', 'feedback');
 
 	if (element.textContent == questionBank[index].answer) {
 		// correct
 		correctQuestions++;
-		newDiv.append(`Question ${currentQuestion} was correct!`);
+		feedback.append(`Question ${currentQuestion} was correct!`);
 	} else {
 		// incorrect
 		secondsLeft = secondsLeft - penalty;
-		newDiv.innerHTML = `<p>Question ${currentQuestion} was incorrect.<br>"${questionBank[index].title}"<br>Answer: "${questionBank[index].answer}".<br>Penalty: -${penalty} seconds</p>`;
+		feedback.innerHTML = `<p>Question ${currentQuestion} was incorrect.<br>"${questionBank[index].title}"<br>Answer: "${questionBank[index].answer}".<br>Penalty: -${penalty} seconds</p>`;
 	}
 
 	// increment current question
@@ -144,17 +153,15 @@ function checkAnswer(event) {
 	currentQuestion = index + 1;
 
 	if (index >= totalQuestions) {
-		// reached the end of the questionBank
-		recordSection();
 		//  render the timer
 		secondsEl.textContent = secondsLeft.toString().padStart(2, '0');
-		// feedback message
-		newDiv.textContent = `${correctQuestions}/${totalQuestions} correct, pretty good!`;
+		// render recordSection
+		recordSection();
 	} else {
 		// clicking on any option renders the next question and set of options
 		renderQuizQuestions(index);
+		newMain.appendChild(feedback);
 	}
-	newMain.appendChild(newDiv);
 }
 function recordSection() {
 	// if the user finished with any time remaining, stop the timer so the user can view the time left
@@ -167,30 +174,58 @@ function recordSection() {
 	newMain.innerHTML = '';
 	newMain.className = 'recordSection';
 
-	// heading for 'Nice Try!'
-	var newH1 = document.createElement('h1');
+	// feedback message
+	newMain.appendChild(feedback);
+
+	// separator
+	newMain.appendChild(document.createElement('hr'));
+
+	// heading for validation
+	newH1 = document.createElement('h1');
 	newH1.setAttribute('id', 'victoryMessage');
-	newH1.textContent = 'Nice Try! ✌🏻';
+	newH1.textContent = `${correctQuestions}/${totalQuestions}`;
+	newMain.appendChild(newH1);
+	newH1 = document.createElement('h1');
+	newH1.setAttribute('id', 'affirmation');
+	if (correctQuestions === 0) {
+		newH1.append(`Don't worry, everyone starts at 0! 😶‍🌫️`);
+	} else if (correctQuestions === 1) {
+		newH1.append(`One for the road, 5 for the study table! 🐥`);
+	} else if (correctQuestions === 2) {
+		newH1.append(`Two is better than one! ⛅`);
+	} else if (correctQuestions === 3) {
+		newH1.append(`That's 50% correct! 🌤️`);
+	} else if (correctQuestions === 4) {
+		newH1.append(`Four correct! Not bad! 🌻`);
+	} else if (correctQuestions === 5) {
+		newH1.append(`Five correct! Beautiful! ✨`);
+	} else if (correctQuestions === 6) {
+		newH1.append(`Bingo! Hats off to you! 🎩`);
+	}
 	newMain.appendChild(newH1);
 
 	// label for 'Your final score is'
-	var newLabel = document.createElement('p');
+	newLabel = document.createElement('p');
 	newLabel.setAttribute('id', 'victoryScoreLabel');
 	newLabel.textContent = 'Your final score is: ' + secondsLeft;
 	newMain.appendChild(newLabel);
 
+	// separator
+	newMain.appendChild(document.createElement('hr'));
+
 	// label for 'Your initials:'
-	var recordInitialLabel = document.createElement('label');
-	recordInitialLabel.setAttribute('id', 'recordInitialLabel');
-	recordInitialLabel.textContent = 'Please enter your initials below: ';
-	newMain.appendChild(recordInitialLabel);
+	newLabel = document.createElement('label');
+	newLabel.setAttribute('id', 'recordInitialLabel');
+	newLabel.textContent = 'Please enter your initials below: ';
+	newMain.appendChild(newLabel);
 
 	// input for user to write initials
-	var recordInitialInput = document.createElement('input');
-	recordInitialInput.setAttribute('type', 'text');
-	recordInitialInput.setAttribute('id', 'initials');
-	recordInitialInput.textContent = '';
-	newMain.appendChild(recordInitialInput);
+	newInput = document.createElement('input');
+	newInput.setAttribute('type', 'text');
+	newInput.setAttribute('maxLength', '2');
+	newInput.setAttribute('id', 'initials');
+	newInput.textContent = '';
+	newMain.appendChild(newInput);
 
 	// submit button to record score
 	newButton = document.createElement('button');
@@ -198,7 +233,7 @@ function recordSection() {
 	newButton.setAttribute('id', 'submit');
 	newButton.textContent = 'Submit';
 	newButton.addEventListener('click', function () {
-		var initials = recordInitialInput.value;
+		var initials = newInput.value;
 		if (initials.length === 0) {
 			initials = 'noname';
 		}
@@ -380,9 +415,7 @@ function renderQuizMain() {
 	newButton = document.createElement('button');
 	newButton.classList.add('splash-start-button');
 	newButton.setAttribute('id', 'startTime');
-	newSpan = document.createElement('span');
-	newSpan.append('Ready?');
-	newButton.append(newSpan);
+	newButton.append('Ready?');
 	newSection.append(newButton);
 
 	newMain.append(newSection);
