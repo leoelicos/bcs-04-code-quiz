@@ -43,9 +43,14 @@ var secondsLeft; // an integer that keeps track of the number of seconds left on
 var currentQuestionEl; // DOM object that renders current question
 var startButtonEl; // element that starts the game when clicked
 var secondsEl; // element that renders the seconds left
-var section, p, icon, img, span, h1, button, newList, newListItem, newLabel, newInput, feedback;
+var feedbackEl; // element that renders feedback for correct and incorrect questions
+var section, p, icon, img, span, h1, button, ul, li, label, input; // elements used to create new content
 
-init(); // load the page
+/*****************************
+  FUNCTIONS THAT RUN THE GAME
+ *****************************/
+
+init(); // the only function that runs initially
 
 function init() {
 	/*
@@ -63,7 +68,6 @@ function init() {
 
 	/*
 	 Render DOM
-	 * clear body
 	 * render splash header
 	 * render splash main
 	 */
@@ -98,19 +102,11 @@ function init() {
 }
 
 function renderSplashHeader() {
-	/*
-	 * empty header
-	 */
-
+	//* reset header
 	header.innerHTML = '';
 	header.classList = '';
 
-	/* 
-	 left part of header
-	 * clock icon
-	 * seconds left
-	 */
-
+	//* left part of header, with clock icon and secondsLeft
 	p = document.createElement('p');
 	p.classList.add('nav-timer');
 	icon = document.createElement('i');
@@ -125,12 +121,7 @@ function renderSplashHeader() {
 	p.append(span);
 	header.append(p);
 
-	/* 
-	 middle part of header
-	 * current question
-	 * total questions
-	 */
-
+	//* middle part of header, with currentQuestion and totalQuestions
 	p = document.createElement('p');
 	p.classList.add('nav-question');
 	p.append('Question ');
@@ -140,11 +131,7 @@ function renderSplashHeader() {
 	p.append(span);
 	header.append(p);
 
-	/* 
-	 right part of header
-	 * high score icon that takes user to high scores page
-	 */
-
+	//* right part of header, with high score icon that takes user to high scores page
 	p = document.createElement('p');
 	p.classList.add('nav-view');
 	icon = document.createElement('i');
@@ -155,9 +142,10 @@ function renderSplashHeader() {
 }
 
 function renderSplashMain() {
-	//* empty main
+	//* clear main
 	main.innerHTML = '';
 	main.classList = '';
+
 	//* create splash container
 	section = document.createElement('section');
 	section.setAttribute('id', 'splash');
@@ -220,7 +208,7 @@ function renderQuizQuestions(index) {
 
 	//* section.appendChild(p);
 	main.append(p);
-	newList = document.createElement('ul');
+	ul = document.createElement('ul');
 
 	//* go to cycle through each object in questionBank at the index passed to this function
 	//* renders the questions to the page after the game has been clicked to start
@@ -229,53 +217,45 @@ function renderQuizQuestions(index) {
 		button.classList.add('btn');
 		button.textContent = newItem;
 
-		newListItem = document.createElement('li');
-		newListItem.classList.add('btn-wrapper');
-		newListItem.addEventListener('click', checkAnswer);
-		newListItem.appendChild(button);
+		li = document.createElement('li');
+		li.classList.add('btn-wrapper');
+		li.addEventListener('click', checkAnswer);
+		li.appendChild(button);
 
-		newList.appendChild(newListItem);
+		ul.appendChild(li);
 	});
 
-	main.appendChild(newList);
+	main.appendChild(ul);
 }
 function checkAnswer(event) {
 	//* feedback message
-	feedback = document.createElement('p');
-	feedback.setAttribute('id', 'feedback');
+	feedbackEl = document.createElement('p');
+	feedbackEl.setAttribute('id', 'feedback');
 
 	if (event.target.textContent == questionBank[index].answer) {
 		//* correct
 		correctQuestions++;
-		feedback.classList.add('greenFeedback');
-		feedback.append(`Question ${currentQuestion} was correct!`);
+		feedbackEl.classList.add('greenfeedback');
+		feedbackEl.append(`Question ${currentQuestion} was correct!`);
 	} else {
 		//* incorrect
 		secondsLeft = secondsLeft - penalty;
-		feedback.classList.add('redFeedback');
-		feedback.innerHTML = `Question ${currentQuestion} was incorrect.<br>"${questionBank[index].title}"<br>Answer: "${questionBank[index].answer}".<br>Penalty: -${penalty} seconds`;
+		feedbackEl.classList.add('redfeedback');
+		feedbackEl.innerHTML = `Question ${currentQuestion} was incorrect.<br>"${questionBank[index].title}"<br>Answer: "${questionBank[index].answer}".<br>Penalty: -${penalty} seconds`;
 	}
 
-	// increment current question
+	// increment index and current question
 	index++;
 	currentQuestion = index + 1;
 
 	if (index >= totalQuestions) {
-		/* 
-		reached the end of the questions
-		 * render the timer
-		 * render page to record score
-		*/
-		secondsEl.textContent = secondsLeft.toString().padStart(2, '0');
-		recordSection();
+		//* reached the end of the questions
+		secondsEl.textContent = secondsLeft.toString().padStart(2, '0'); //* render the timer
+		recordSection(); //* render page to record score
 	} else {
-		/* 
-		clicking on any option renders the next question and set of options
-		* render next set of questions
-	   * add feedback message to the end of the next page
-		*/
-		renderQuizQuestions(index);
-		main.appendChild(feedback);
+		//* clicking on any option renders the next question and set of options
+		renderQuizQuestions(index); //* render next set of questions
+		main.appendChild(feedbackEl); //* add feedback message to the end of the next page
 	}
 }
 function recordSection() {
@@ -289,7 +269,7 @@ function recordSection() {
 	main.className = 'recordSection'; // append to main
 
 	//* feedback message from question 6, and a separator
-	main.append(feedback, document.createElement('hr'));
+	main.append(feedbackEl, document.createElement('hr'));
 
 	//* show total score
 	h1 = document.createElement('h1');
@@ -318,24 +298,24 @@ function recordSection() {
 	main.appendChild(h1); // append to main
 
 	//* show number of seconds remaining, and a separator
-	newLabel = document.createElement('p');
-	newLabel.setAttribute('id', 'victoryScoreLabel');
-	newLabel.textContent = 'Seconds remaining: ' + Math.max(secondsLeft, 0); // can't be lower than zero
-	main.appendChild(newLabel, document.createElement('hr')); // append to main
+	label = document.createElement('p');
+	label.setAttribute('id', 'victoryScoreLabel');
+	label.textContent = 'Seconds remaining: ' + Math.max(secondsLeft, 0); // can't be lower than zero
+	main.appendChild(label, document.createElement('hr')); // append to main
 
 	//* label for 'Your initials:'
-	newLabel = document.createElement('label');
-	newLabel.setAttribute('id', 'recordInitialLabel');
-	newLabel.textContent = 'Please enter your initials below: ';
-	main.appendChild(newLabel); // append to main
+	label = document.createElement('label');
+	label.setAttribute('id', 'recordInitialLabel');
+	label.textContent = 'Please enter your initials below: ';
+	main.appendChild(label); // append to main
 
 	//* input for user to write initials
-	newInput = document.createElement('input');
-	newInput.setAttribute('type', 'text');
-	newInput.setAttribute('maxLength', '2'); //! force restriction of 2 letters for initials
-	newInput.setAttribute('id', 'initials');
-	newInput.textContent = '';
-	main.appendChild(newInput); // append to main
+	input = document.createElement('input');
+	input.setAttribute('type', 'text');
+	input.setAttribute('maxLength', '2'); //! force restriction of 2 letters for initials
+	input.setAttribute('id', 'initials');
+	input.textContent = '';
+	main.appendChild(input); // append to main
 
 	//* render submit button
 	button = document.createElement('button');
@@ -347,17 +327,17 @@ function recordSection() {
 	//* add event listener to submit button
 	button.addEventListener('click', function () {
 		//* transform any letters to upper case
-		var initials = newInput.value.toString().toUpperCase();
+		var initials = input.value.toString().toUpperCase();
 
 		if (initials.length === 0) {
 			//! initials invalid.
 
 			//* passive aggressive message that lasts 500 ms
 			button.textContent = 'Your initials please';
-			button.classList.add('redFeedback'); // darker color for wrong answers
+			button.classList.add('redfeedback'); // darker color for wrong answers
 			setTimeout(() => {
 				button.textContent = 'Submit';
-				button.classList.remove('redFeedback'); // remove darker color for correct answers
+				button.classList.remove('redfeedback'); // remove darker color for correct answers
 			}, 500);
 
 			//* exit the event listener so they have to try again
@@ -399,12 +379,12 @@ function renderHighScoresHeader() {
 	icon.classList.add('far', 'fa-chart-bar');
 
 	//* create text 'Hall of Fame'
-	newLabel = document.createElement('span');
-	newLabel.textContent = '\xa0Hall of Fame';
-	newLabel.setAttribute('id', 'hallOfFame');
+	label = document.createElement('span');
+	label.textContent = '\xa0Hall of Fame';
+	label.setAttribute('id', 'hallOfFame');
 
 	//* add icon and text to header
-	header.append(icon, newLabel);
+	header.append(icon, label);
 }
 
 function renderHighScoresMain() {
@@ -413,13 +393,13 @@ function renderHighScoresMain() {
 	main.className = 'highscore-main';
 
 	//* create list of high scores
-	var newList = document.createElement('ul');
-	newList.setAttribute('id', 'hs');
-	main.appendChild(newList); // add to main
+	var ul = document.createElement('ul');
+	ul.setAttribute('id', 'hs');
+	main.appendChild(ul); // add to main
 
 	//* create a list item that is for table headings: "Rank, Initials, Score"
-	newListItem = document.createElement('li');
-	newListItem.classList.add('btn-wrapper');
+	li = document.createElement('li');
+	li.classList.add('btn-wrapper');
 
 	//* create a wrapper for the table headings
 	newDiv = document.createElement('button');
@@ -445,8 +425,8 @@ function renderHighScoresMain() {
 	newDiv.appendChild(span);
 
 	//* append wrapper to list item, and list item to list
-	newListItem.appendChild(newDiv);
-	hs.appendChild(newListItem);
+	li.appendChild(newDiv);
+	hs.appendChild(li);
 
 	//* create a temporary variable to store JSON
 	var SYTYCJ = localStorage.getItem('SYTYCJ');
@@ -462,8 +442,8 @@ function renderHighScoresMain() {
 			//* loop through array of high scores
 
 			//* render high score wrapper
-			newListItem = document.createElement('li');
-			newListItem.classList.add('btn-wrapper');
+			li = document.createElement('li');
+			li.classList.add('btn-wrapper');
 			newDiv = document.createElement('button');
 			newDiv.setAttribute('id', 'hs-wrapper');
 			newDiv.classList.add('btn');
@@ -487,8 +467,8 @@ function renderHighScoresMain() {
 			newDiv.appendChild(span);
 
 			//* add to DOM
-			newListItem.appendChild(newDiv); // add wrapper to the list item
-			hs.appendChild(newListItem); // add list item to list
+			li.appendChild(newDiv); // add wrapper to the list item
+			hs.appendChild(li); // add list item to list
 		}
 	}
 
