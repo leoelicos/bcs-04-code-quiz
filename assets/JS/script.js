@@ -1,9 +1,10 @@
 /****************** 
-  GLOBAL VARIABLES
+  GLOBAL CONSTANTS
  ******************/
 
+const gameName = 'So You Think You Can Javascript?';
 const questionBank = [
-	// This is a global array of objects to store each question's title, choices and answer
+	//* This is a global array of objects to store each question's title, choices and answer
 	// Reference: Trilogy Coding Bootcamp Week 3, Lesson 04
 	{ title: 'Which operator is used to combine values to log a single message to the console?', choices: ['+', '-', '*', '/'], answer: '+' },
 	// Reference: Trilogy Coding Bootcamp Week 3, Lesson 07
@@ -18,67 +19,76 @@ const questionBank = [
 	{ title: 'Which of these array methods can change [1, 2, 3] to [1, 2, 3, 4]?', choices: ['Array.sort()', 'Array.push()', 'Array.slice()', 'Array.replace()'], answer: 'Array.push()' },
 ];
 const totalQuestions = questionBank.length; // total number of questions
-var index; // to increment through questionBank
+const penalty = 10; // penalty of 10 seconds for each wrong answer
 
-var correctQuestions = 0; //  running score
-var currentQuestion = 0; // integer that holds current question
-var currentQuestionEl; // element that renders current question
-const penalty = 10; // penalty of 5 seconds for each wrong answer
+// DOM ACCESS
+const body = document.body;
+const header = body.children[0];
+const main = body.children[1];
 
+/******************
+  GLOBAL VARIABLES
+ ******************/
+
+// FUNCTIONS
+var timer; // a function that controls the timer
+
+// INTEGERS
+var index; // an integer that increments through questionBank
+var correctQuestions = 0; // an integer that keeps track of the correct questions
+var currentQuestion = 0; // an integer that keeps track of the current questions
+var secondsLeft; // an integer that keeps track of the number of seconds left on the timer
+
+// DOM MANIPULATION
+var currentQuestionEl; // DOM object that renders current question
 var startButtonEl; // element that starts the game when clicked
-var timer; // global function that controls the timer
-var secondsLeft = 60; // seconds left
 var secondsEl; // element that renders the seconds left
-
-// elements
-const htmlBody = document.body;
-// dynamically created elements
-var newHeader, newMain, newSection, newParagraph, newIcon, newImage, newSpan, newH1, newButton, newList, newListItem, newLabel, newInput, feedback;
+var section, p, icon, img, span, h1, button, newList, newListItem, newLabel, newInput, feedback;
 
 init(); // load the page
 
 function init() {
-	// clear body
-	document.body.innerHTML = '';
-	document.body.className = '';
+	/*
+	 Initialise parameters
+	 * reset index
+	 * reset current question position
+	 * reset number of correct questions
+	 * reset number of seconds left
+	*/
 
-	// render header
-	renderQuizHeader();
+	index = 0;
+	currentQuestion = index + 1;
+	correctQuestions = 0;
+	secondsLeft = 60;
 
-	// render splash area
-	renderQuizMain();
+	/*
+	 Render DOM
+	 * clear body
+	 * render splash header
+	 * render splash main
+	 */
 
-	currentQuestionEl = document.getElementById('currentQuestion');
-	secondsEl = document.getElementById('seconds');
-	startButtonEl = document.getElementById('startTime');
+	renderSplashHeader();
+	renderSplashMain();
 
+	//* start button events
+	startButtonEl = document.getElementById('startTime'); //* assign handle to start button
 	startButtonEl.addEventListener('click', () => {
-		// user clicked start
+		document.querySelector('.nav-view').parentNode.removeChild(document.querySelector('.nav-view')); //* Derender high scores when game starts
+		renderQuizQuestions(index); //* Render question title and options
 
-		// reset index to question 0
-		index = 0;
+		/*
+		 Define timer
+		 * Decrement secondsLeft
+		 * Render secondsLeft to DOM
+		 * When secondsLeft reaches 0, clear timer and go to records page
+		 */
 
-		// reset secondsLeft to 60
-		secondsLeft = 60;
-
-		// reset correctQuestions to 0
-		correctQuestions = 0;
-
-		// reset current question
-		currentQuestion = index + 1;
-
-		// remove high scores button during game
-		document.querySelector('.nav-view').parentNode.removeChild(document.querySelector('.nav-view'));
-
-		// renders the first question and the first set of options
-		renderQuizQuestions(index);
-
-		// starts the timer
 		timer = setInterval(() => {
 			secondsLeft--;
+			secondsEl = document.getElementById('seconds'); //* handle to display number of seconds left
 			secondsEl.textContent = secondsLeft.toString().padStart(2, '0');
 			if (secondsLeft <= 0) {
-				// timer has reached zero
 				clearInterval(timer);
 				recordSection();
 				secondsEl.textContent = "Time's up!";
@@ -87,64 +97,160 @@ function init() {
 	});
 }
 
+function renderSplashHeader() {
+	/*
+	 * empty header
+	 */
+
+	header.innerHTML = '';
+	header.classList = '';
+
+	/* 
+	 left part of header
+	 * clock icon
+	 * seconds left
+	 */
+
+	p = document.createElement('p');
+	p.classList.add('nav-timer');
+	icon = document.createElement('i');
+	icon.classList.add('fa', 'fa-clock');
+	p.append(icon);
+	span = document.createElement('span');
+	span.append('0:');
+	p.append(span);
+	span = document.createElement('span');
+	span.setAttribute('id', 'seconds');
+	span.append('60');
+	p.append(span);
+	header.append(p);
+
+	/* 
+	 middle part of header
+	 * current question
+	 * total questions
+	 */
+
+	p = document.createElement('p');
+	p.classList.add('nav-question');
+	p.append('Question ');
+	span = document.createElement('span');
+	span.setAttribute('id', 'currentQuestion');
+	span.append('0/6');
+	p.append(span);
+	header.append(p);
+
+	/* 
+	 right part of header
+	 * high score icon that takes user to high scores page
+	 */
+
+	p = document.createElement('p');
+	p.classList.add('nav-view');
+	icon = document.createElement('i');
+	icon.classList.add('far', 'fa-chart-bar');
+	p.append(icon);
+	p.addEventListener('click', renderHighScores);
+	header.append(p);
+}
+
+function renderSplashMain() {
+	//* empty main
+	main.innerHTML = '';
+	main.classList = '';
+	//* create splash container
+	section = document.createElement('section');
+	section.setAttribute('id', 'splash');
+
+	//* create SYTYCJ logo
+	img = document.createElement('img');
+	img.classList.add('splash-image');
+	img.setAttribute('src', './assets/images/favicon.png'); // use same icon as favicon
+	img.setAttribute('alt', 'quiz icon'); // accessibility
+	section.append(img); // add to splash container
+
+	//* create heading to display game name
+	h1 = document.createElement('h1');
+	h1.classList.add('splash-heading');
+	h1.append(gameName);
+	section.append(h1); // add to splash container
+
+	//* create description of the number of questions
+	p = document.createElement('p');
+	p.classList.add('splash-description');
+	p.append(`${totalQuestions} questions.`);
+	section.append(p); // add to splash container
+
+	//* create description of the timing
+	p = document.createElement('p');
+	p.classList.add('splash-description');
+	p.append(`${secondsLeft} seconds.`);
+	section.append(p); // add to splash container
+
+	//* create description of the time penalty for each wrong question
+	p = document.createElement('p');
+	p.classList.add('splash-description');
+	p.append(`Wrong answers will deduct ${penalty} seconds!`);
+	section.append(p); // add to splash container
+
+	//* create start button
+	button = document.createElement('button');
+	button.classList.add('splash-start-button');
+	button.setAttribute('id', 'startTime');
+	button.append('Ready?');
+	section.append(button); // add to splash container
+
+	//* append to DOM
+	main.append(section); // add to main
+}
+
 function renderQuizQuestions(index) {
-	var userQuestion = questionBank[index].title;
-	var userChoices = questionBank[index].choices;
-	/**************** 
-	  QUIZ QUESTIONS
-	 ****************/
+	//* update current question in the header
+	currentQuestionEl = document.getElementById('currentQuestion'); //* assign handle to display current question position
+	currentQuestionEl.innerHTML = `${currentQuestion}/6`;
 
-	// update current question in the header
-	currentQuestionEl.innerHTML = '';
-	currentQuestionEl.append(`${currentQuestion}/6`);
+	//* clear main
+	main.innerHTML = '';
+	main.classList.add('quiz');
 
-	// clear main
-	newMain = document.body.children[1];
-	newMain.innerHTML = '';
-	newMain.classList.add('quiz');
+	//* create question title from questionBank
+	p = document.createElement('p');
+	p.setAttribute('id', 'quiz-title');
+	p.append(questionBank[index].title);
 
-	// fill the horizontal space
-	// newSection = document.createElement('section');
-	// newSection.style.display = 'block';
-	newParagraph = document.createElement('p');
-	newParagraph.setAttribute('id', 'quiz-title');
-	newParagraph.append(userQuestion);
-	// newSection.appendChild(newParagraph);
-	newMain.append(newParagraph);
+	//* section.appendChild(p);
+	main.append(p);
 	newList = document.createElement('ul');
 
-	userChoices.forEach((newItem) => {
-		newButton = document.createElement('button');
-		newButton.classList.add('btn');
-		newButton.textContent = newItem;
+	//* go to cycle through each object in questionBank at the index passed to this function
+	//* renders the questions to the page after the game has been clicked to start
+	questionBank[index].choices.forEach((newItem) => {
+		button = document.createElement('button');
+		button.classList.add('btn');
+		button.textContent = newItem;
 
 		newListItem = document.createElement('li');
 		newListItem.classList.add('btn-wrapper');
 		newListItem.addEventListener('click', checkAnswer);
-		newListItem.appendChild(newButton);
+		newListItem.appendChild(button);
 
 		newList.appendChild(newListItem);
-
-		// newSection.appendChild(newList);
 	});
 
-	// newSection.appendChild(newList);
-	// newMain.appendChild(newSection);
-	newMain.appendChild(newList);
+	main.appendChild(newList);
 }
 function checkAnswer(event) {
-	var element = event.target;
-
+	//* feedback message
 	feedback = document.createElement('p');
 	feedback.setAttribute('id', 'feedback');
 
-	if (element.textContent == questionBank[index].answer) {
-		// correct
+	if (event.target.textContent == questionBank[index].answer) {
+		//* correct
 		correctQuestions++;
 		feedback.classList.add('greenFeedback');
 		feedback.append(`Question ${currentQuestion} was correct!`);
 	} else {
-		// incorrect
+		//* incorrect
 		secondsLeft = secondsLeft - penalty;
 		feedback.classList.add('redFeedback');
 		feedback.innerHTML = `Question ${currentQuestion} was incorrect.<br>"${questionBank[index].title}"<br>Answer: "${questionBank[index].answer}".<br>Penalty: -${penalty} seconds`;
@@ -155,327 +261,258 @@ function checkAnswer(event) {
 	currentQuestion = index + 1;
 
 	if (index >= totalQuestions) {
-		//  render the timer
+		/* 
+		reached the end of the questions
+		 * render the timer
+		 * render page to record score
+		*/
 		secondsEl.textContent = secondsLeft.toString().padStart(2, '0');
-		// render recordSection
 		recordSection();
 	} else {
-		// clicking on any option renders the next question and set of options
+		/* 
+		clicking on any option renders the next question and set of options
+		* render next set of questions
+	   * add feedback message to the end of the next page
+		*/
 		renderQuizQuestions(index);
-		newMain.appendChild(feedback);
+		main.appendChild(feedback);
 	}
 }
 function recordSection() {
-	// if the user finished with any time remaining, stop the timer so the user can view the time left
+	//* halt timer
 	if (secondsLeft >= 0) {
 		clearInterval(timer);
 	}
 
-	// clear main
-	newMain = document.body.children[1];
-	newMain.innerHTML = '';
-	newMain.className = 'recordSection';
+	//* clear main
+	main.innerHTML = '';
+	main.className = 'recordSection'; // append to main
 
-	// feedback message
-	newMain.appendChild(feedback);
+	//* feedback message from question 6, and a separator
+	main.append(feedback, document.createElement('hr'));
 
-	// separator
-	newMain.appendChild(document.createElement('hr'));
+	//* show total score
+	h1 = document.createElement('h1');
+	h1.setAttribute('id', 'victoryMessage');
+	h1.textContent = `${correctQuestions}/${totalQuestions}`;
+	main.appendChild(h1); // append to main
 
-	// heading for validation
-	newH1 = document.createElement('h1');
-	newH1.setAttribute('id', 'victoryMessage');
-	newH1.textContent = `${correctQuestions}/${totalQuestions}`;
-	newMain.appendChild(newH1);
-	newH1 = document.createElement('h1');
-	newH1.setAttribute('id', 'affirmation');
+	//* show a short validation message
+	h1 = document.createElement('h1');
+	h1.setAttribute('id', 'affirmation');
 	if (correctQuestions === 0) {
-		newH1.append(`Don't worry, everyone starts at 0! 😶‍🌫️`);
+		h1.append(`Don't worry, everyone starts at 0! 😶‍🌫️`);
 	} else if (correctQuestions === 1) {
-		newH1.append(`One for the road, 5 for the study table! 🐥`);
+		h1.append(`One for the road, 5 for the study table! 🐥`);
 	} else if (correctQuestions === 2) {
-		newH1.append(`Two is better than one! ⛅`);
+		h1.append(`Two is better than one! ⛅`);
 	} else if (correctQuestions === 3) {
-		newH1.append(`That's 50% correct! 🌤️`);
+		h1.append(`That's 50% correct! 🌤️`);
 	} else if (correctQuestions === 4) {
-		newH1.append(`Four correct! Not bad! 🌻`);
+		h1.append(`Four correct! Not bad! 🌻`);
 	} else if (correctQuestions === 5) {
-		newH1.append(`Five correct! Beautiful! ✨`);
+		h1.append(`Five correct! Beautiful! ✨`);
 	} else if (correctQuestions === 6) {
-		newH1.append(`Bingo! Hats off to you! 🎩`);
+		h1.append(`Bingo! Hats off to you! 🎩`);
 	}
-	newMain.appendChild(newH1);
+	main.appendChild(h1); // append to main
 
-	// label for 'Seconds remaining'
+	//* show number of seconds remaining, and a separator
 	newLabel = document.createElement('p');
 	newLabel.setAttribute('id', 'victoryScoreLabel');
 	newLabel.textContent = 'Seconds remaining: ' + Math.max(secondsLeft, 0); // can't be lower than zero
-	newMain.appendChild(newLabel);
+	main.appendChild(newLabel, document.createElement('hr')); // append to main
 
-	// separator
-	newMain.appendChild(document.createElement('hr'));
-
-	// label for 'Your initials:'
+	//* label for 'Your initials:'
 	newLabel = document.createElement('label');
 	newLabel.setAttribute('id', 'recordInitialLabel');
 	newLabel.textContent = 'Please enter your initials below: ';
-	newMain.appendChild(newLabel);
+	main.appendChild(newLabel); // append to main
 
-	// input for user to write initials
+	//* input for user to write initials
 	newInput = document.createElement('input');
 	newInput.setAttribute('type', 'text');
-	newInput.setAttribute('maxLength', '2');
+	newInput.setAttribute('maxLength', '2'); //! force restriction of 2 letters for initials
 	newInput.setAttribute('id', 'initials');
 	newInput.textContent = '';
-	newMain.appendChild(newInput);
+	main.appendChild(newInput); // append to main
 
-	// submit button to record score
-	newButton = document.createElement('button');
-	newButton.setAttribute('type', 'submit');
-	newButton.setAttribute('id', 'submit');
-	newButton.textContent = 'Submit';
-	newButton.addEventListener('click', function () {
+	//* render submit button
+	button = document.createElement('button');
+	button.setAttribute('type', 'submit');
+	button.setAttribute('id', 'submit');
+	button.textContent = 'Submit';
+	main.appendChild(button); // append to main
+
+	//* add event listener to submit button
+	button.addEventListener('click', function () {
+		//* transform any letters to upper case
 		var initials = newInput.value.toString().toUpperCase();
+
 		if (initials.length === 0) {
-			newButton.textContent = 'Your initials please';
-			newButton.classList.add('redFeedback');
+			//! initials invalid.
+
+			//* passive aggressive message that lasts 500 ms
+			button.textContent = 'Your initials please';
+			button.classList.add('redFeedback'); // darker color for wrong answers
 			setTimeout(() => {
-				newButton.textContent = 'Submit';
-				newButton.classList.remove('redFeedback');
+				button.textContent = 'Submit';
+				button.classList.remove('redFeedback'); // remove darker color for correct answers
 			}, 500);
+
+			//* exit the event listener so they have to try again
 			return;
+		} else {
+			//* initials valid.
+
+			//* get local storage object called 'SYTYCJ'
+			var SYTYCJ = localStorage.getItem('SYTYCJ');
+
+			//* if local storage object exists, parse it
+			SYTYCJ === null ? (SYTYCJ = []) : (SYTYCJ = JSON.parse(SYTYCJ));
+
+			//* push data to temporary string 'SYTYCJ'. score cannot be less than 0
+			SYTYCJ.push({ initials: initials, score: Math.max(secondsLeft, 0) });
+
+			//* stringify temporary string & set as local storage object
+			localStorage.setItem('SYTYCJ', JSON.stringify(SYTYCJ));
+
+			//* render highScores
+			renderHighScores();
 		}
-		var SYTYCJ = localStorage.getItem('SYTYCJ');
-		SYTYCJ === null ? (SYTYCJ = []) : (SYTYCJ = JSON.parse(SYTYCJ));
-		SYTYCJ.push({ initials: initials, score: Math.max(secondsLeft, 0) });
-		localStorage.setItem('SYTYCJ', JSON.stringify(SYTYCJ));
-		// render highScores
-		renderHighScores();
-	});
-	newMain.appendChild(newButton);
-}
-function renderHighScoresHeader() {
-	/********************
-	  HIGH SCORES HEADER
-	 ********************/
-
-	// clear current header
-	newHeader = document.body.children[0];
-	newHeader.innerHTML = '';
-	newHeader.className = '';
-
-	newHeader.classList.add('highscore-header');
-
-	// create icon for HIGH SCORES
-	newIcon = document.createElement('i');
-	newIcon.setAttribute('id', 'hsIcon');
-	newIcon.classList.add('far', 'fa-chart-bar');
-	newHeader.appendChild(newIcon);
-	newLabel = document.createElement('span');
-	newLabel.textContent = '\xa0Hall of Fame';
-	newLabel.setAttribute('id', 'hallOfFame');
-	newHeader.appendChild(newLabel);
-}
-
-function renderHighScoresMain() {
-	/********************
-	  HIGH SCORES MAIN
-	 ********************/
-	newMain = document.body.children[1];
-	newMain.innerHTML = '';
-	newMain.className = 'highscore-main';
-
-	// List: High Scores
-	var newList = document.createElement('ul');
-	newList.setAttribute('id', 'hs');
-	newMain.appendChild(newList);
-	var SYTYCJ = localStorage.getItem('SYTYCJ');
-	SYTYCJ = JSON.parse(SYTYCJ);
-	// if not null, sort by score with the highest at the top
-	if (SYTYCJ != null) {
-		SYTYCJ.sort(function (a, b) {
-			return b.score - a.score;
-		});
-	}
-	hs.style.listStyleType = 'none';
-	if (SYTYCJ !== null) {
-		// table headings
-		newListItem = document.createElement('li');
-		newListItem.classList.add('btn-wrapper');
-		newDiv = document.createElement('button');
-		newDiv.setAttribute('id', 'hs-wrapper');
-		newDiv.classList.add('btn');
-		// render span for rank
-		newSpan = document.createElement('span');
-		newSpan.setAttribute('id', 'hs-rank');
-		newSpan.textContent = `Rank`;
-		newDiv.appendChild(newSpan);
-		// render span for high scorer's initials
-		newSpan = document.createElement('span');
-		newSpan.setAttribute('id', 'hs-initial');
-		newSpan.textContent = `Name`;
-		newDiv.appendChild(newSpan);
-		// render span for high scorer's score
-		newSpan = document.createElement('span');
-		newSpan.setAttribute('id', 'hs-score');
-		newSpan.textContent = `Score`;
-		newDiv.appendChild(newSpan);
-		newListItem.appendChild(newDiv);
-
-		newDiv.appendChild(newSpan);
-		// append to high score list
-		hs.appendChild(newListItem);
-
-		for (var i = 0; i < SYTYCJ.length; i++) {
-			// render each high score as a list item
-			newListItem = document.createElement('li');
-			newListItem.classList.add('btn-wrapper');
-			newDiv = document.createElement('button');
-			newDiv.setAttribute('id', 'hs-wrapper');
-			newDiv.classList.add('btn');
-			// render span for rank
-			newSpan = document.createElement('span');
-			newSpan.setAttribute('id', 'hs-rank');
-			newSpan.textContent = `${i + 1}`;
-			newDiv.appendChild(newSpan);
-			// render span for high scorer's initials
-			newSpan = document.createElement('span');
-			newSpan.setAttribute('id', 'hs-initial');
-			newSpan.textContent = `${SYTYCJ[i].initials}`;
-			newDiv.appendChild(newSpan);
-			// render span for high scorer's score
-			newSpan = document.createElement('span');
-			newSpan.setAttribute('id', 'hs-score');
-			newSpan.textContent = `${SYTYCJ[i].score}`;
-			newDiv.appendChild(newSpan);
-			newListItem.appendChild(newDiv);
-
-			newDiv.appendChild(newSpan);
-			// append to high score list
-			hs.appendChild(newListItem);
-		}
-	}
-
-	// Button: New Game
-	var newButton = document.createElement('button');
-	newButton.classList.add('splash-start-button');
-	newButton.setAttribute('id', 'newGame');
-	newButton.append('New Game');
-	newMain.appendChild(newButton);
-
-	// Button: Clear high Scores
-	var newButton = document.createElement('button');
-	newButton.classList.add('splash-start-button');
-	newButton.setAttribute('id', 'clear');
-	newButton.append('Clear High Scores');
-	newMain.appendChild(newButton);
-
-	// Event listener: New Game
-	newGame.addEventListener('click', function () {
-		init();
-	});
-
-	// Event listener: Clear high scores
-	clear.addEventListener('click', () => {
-		localStorage.clear();
-		renderHighScoresMain();
 	});
 }
+
 function renderHighScores() {
 	renderHighScoresHeader();
 	renderHighScoresMain();
 }
 
-function renderQuizHeader() {
-	/************* 
-		 QUIZ HEADER
-	 *************/
+function renderHighScoresHeader() {
+	//* clear current header
+	header.innerHTML = '';
+	header.className = 'highscore-header';
 
-	// create header
-	newHeader = document.createElement('header');
-	// create timer
-	newParagraph = document.createElement('p');
-	newParagraph.classList.add('nav-timer');
-	newIcon = document.createElement('i');
-	newIcon.classList.add('fa', 'fa-clock');
-	newParagraph.append(newIcon);
-	newSpan = document.createElement('span');
-	newSpan.append('0:');
-	newParagraph.append(newSpan);
-	newSpan = document.createElement('span');
-	newSpan.setAttribute('id', 'seconds');
-	newSpan.append('60');
-	newParagraph.append(newSpan);
-	newHeader.append(newParagraph);
-	// create Question Number 0/6
-	newParagraph = document.createElement('p');
-	newParagraph.classList.add('nav-question');
-	newParagraph.append('Question ');
-	newSpan = document.createElement('span');
-	newSpan.setAttribute('id', 'currentQuestion');
-	newSpan.append('0/6');
-	newParagraph.append(newSpan);
-	newHeader.append(newParagraph);
-	// create high scores icon
-	newParagraph = document.createElement('p');
-	newParagraph.classList.add('nav-view');
-	newIcon = document.createElement('i'); // need to add a clickable link to open highscore modal
-	newIcon.classList.add('far', 'fa-chart-bar');
-	newParagraph.append(newIcon);
-	newParagraph.addEventListener('click', renderHighScores);
-	newHeader.append(newParagraph);
+	//* create icon for HIGH SCORES
+	icon = document.createElement('i');
+	icon.setAttribute('id', 'hsIcon');
+	icon.classList.add('far', 'fa-chart-bar');
 
-	// append header to body
-	htmlBody.append(newHeader);
+	//* create text 'Hall of Fame'
+	newLabel = document.createElement('span');
+	newLabel.textContent = '\xa0Hall of Fame';
+	newLabel.setAttribute('id', 'hallOfFame');
+
+	//* add icon and text to header
+	header.append(icon, newLabel);
 }
 
-function renderQuizMain() {
-	/************* 
-		 QUIZ SPLASH
-	 ************/
+function renderHighScoresMain() {
+	//* clear main
+	main.innerHTML = '';
+	main.className = 'highscore-main';
 
-	newMain = document.createElement('main');
-	// splash section
-	newSection = document.createElement('section');
-	newSection.setAttribute('id', 'splash');
-	// icon
-	newImage = document.createElement('img');
-	newImage.classList.add('splash-image');
-	newImage.setAttribute('src', './assets/images/favicon.png');
-	newImage.setAttribute('alt', 'quiz icon');
-	newSection.append(newImage);
+	//* create list of high scores
+	var newList = document.createElement('ul');
+	newList.setAttribute('id', 'hs');
+	main.appendChild(newList); // add to main
 
-	// h1
-	newH1 = document.createElement('h1');
-	newH1.classList.add('splash-heading');
-	newH1.append('So You Think You Can Javascript?');
-	newSection.append(newH1);
+	//* create a list item that is for table headings: "Rank, Initials, Score"
+	newListItem = document.createElement('li');
+	newListItem.classList.add('btn-wrapper');
 
-	// p
-	newParagraph = document.createElement('p');
-	newParagraph.classList.add('splash-description');
-	newParagraph.append(`${totalQuestions} questions.`);
-	newSection.append(newParagraph);
+	//* create a wrapper for the table headings
+	newDiv = document.createElement('button');
+	newDiv.setAttribute('id', 'hs-wrapper');
+	newDiv.classList.add('btn');
 
-	// p
-	newParagraph = document.createElement('p');
-	newParagraph.classList.add('splash-description');
-	newParagraph.append(`${secondsLeft} seconds.`);
-	newSection.append(newParagraph);
+	//* table heading "Rank"
+	span = document.createElement('span');
+	span.setAttribute('id', 'hs-rank');
+	span.textContent = `Rank`;
+	newDiv.appendChild(span);
 
-	// p
-	newParagraph = document.createElement('p');
-	newParagraph.classList.add('splash-description');
-	newParagraph.append(`Wrong answers will deduct ${penalty} seconds!`);
-	newSection.append(newParagraph);
+	//* table heading "Initials"
+	span = document.createElement('span');
+	span.setAttribute('id', 'hs-initial');
+	span.textContent = `Name`;
+	newDiv.appendChild(span);
 
-	// button
-	newButton = document.createElement('button');
-	newButton.classList.add('splash-start-button');
-	newButton.setAttribute('id', 'startTime');
-	newButton.append('Ready?');
-	newSection.append(newButton);
+	//* table heading "Score"
+	span = document.createElement('span');
+	span.setAttribute('id', 'hs-score');
+	span.textContent = `Score`;
+	newDiv.appendChild(span);
 
-	newMain.append(newSection);
-	htmlBody.append(newMain);
+	//* append wrapper to list item, and list item to list
+	newListItem.appendChild(newDiv);
+	hs.appendChild(newListItem);
+
+	//* create a temporary variable to store JSON
+	var SYTYCJ = localStorage.getItem('SYTYCJ');
+
+	//* convert JSON to array
+	SYTYCJ = JSON.parse(SYTYCJ);
+
+	if (SYTYCJ != null) {
+		//* sort by score with the highest at the top
+		SYTYCJ.sort((a, b) => b.score - a.score);
+
+		for (var i = 0; i < SYTYCJ.length; i++) {
+			//* loop through array of high scores
+
+			//* render high score wrapper
+			newListItem = document.createElement('li');
+			newListItem.classList.add('btn-wrapper');
+			newDiv = document.createElement('button');
+			newDiv.setAttribute('id', 'hs-wrapper');
+			newDiv.classList.add('btn');
+
+			//* render high score rank
+			span = document.createElement('span');
+			span.setAttribute('id', 'hs-rank');
+			span.textContent = `${i + 1}`;
+			newDiv.appendChild(span);
+
+			//* render high score initials
+			span = document.createElement('span');
+			span.setAttribute('id', 'hs-initial');
+			span.textContent = `${SYTYCJ[i].initials}`;
+			newDiv.appendChild(span);
+
+			//* render high score
+			span = document.createElement('span');
+			span.setAttribute('id', 'hs-score');
+			span.textContent = `${SYTYCJ[i].score}`;
+			newDiv.appendChild(span);
+
+			//* add to DOM
+			newListItem.appendChild(newDiv); // add wrapper to the list item
+			hs.appendChild(newListItem); // add list item to list
+		}
+	}
+
+	// create button to start a new game
+	var button = document.createElement('button');
+	button.classList.add('splash-start-button');
+	button.setAttribute('id', 'newGame');
+	button.append('New Game');
+	main.appendChild(button);
+	newGame.addEventListener('click', function () {
+		// Event listener: New Game
+		init();
+	});
+
+	// create button to clear current high scores, if any
+	var button = document.createElement('button');
+	button.classList.add('splash-start-button');
+	button.setAttribute('id', 'clear');
+	button.append('Clear High Scores');
+	main.appendChild(button);
+	clear.addEventListener('click', () => {
+		// Event listener: Clear high scores
+		localStorage.clear();
+		// Render the page again to show results cleared
+		renderHighScoresMain();
+	});
 }
