@@ -12,13 +12,25 @@ While making this app, I learned about JSON parse and stringify.
 
 ## Usage
 
-Click on [Code Quiz](https://leoelicos.github.io/bcs-04-code-quiz/). Code Quiz will run on a browser.
+Deployed: [Code Quiz](https://leoelicos.github.io/bcs-04-code-quiz/). Will run on small and large screens.
 
 ## Screenshots
 
-### Code Quiz
+### Splash Page
 
-![Screenshot of Code Quiz](./assets/images/deployed.jpg)
+![Screenshot of Page: Splash](./assets/images/deployed1.jpg)
+
+### Questions
+
+![Screenshot of Page: Questions](./assets/images/deployed2.jpg)
+
+### Results
+
+![Screenshot of Page: Results](./assets/images/deployed3.jpg)
+
+### High Scores
+
+![Screenshot of Page: High Scores](./assets/images/deployed4.jpg)
 
 ## Credits
 
